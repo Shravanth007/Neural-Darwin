@@ -7,10 +7,30 @@ The current codebase runs a simulation loop in Python, exposes state through Fas
 ## What This Project Covers
 
 - Tick-based world simulation on a 50x50 grid
+- Autonomous agents driven by a built-in heuristic policy: they move, trade,
+  buy weapons at the market, murder adjacent rivals, and hunt bounties —
+  no API key required
 - Economy loop with income, expenses, and elimination
 - Combat systems (knife kills, bounty hunting, arena duels)
-- Persistent event and snapshot logging in SQLite
+- Event and snapshot logging in SQLite (reset on each fresh boot)
 - Live frontend map, agent table, wealth chart, and event feed
+
+## Agent Behavior
+
+Each tick, every living agent takes one action via `core/policy.py`
+(priority order):
+
+1. Attack an adjacent agent if armed (bounty targets first, opportunistic
+   murder otherwise)
+2. Challenge another agent to an arena duel if both are in the arena
+3. Buy a knife when at the market with cash to spare
+4. Walk toward the market when rich but unarmed
+5. Chase visible bountied agents when armed
+6. Make a speculative trade (discounted in the market zone)
+7. Wander
+
+The heuristic policy is the default brain; the `llm/` package is a stub for
+swapping in LLM-driven decisions later.
 
 ## Quick Start
 
@@ -19,7 +39,7 @@ The current codebase runs a simulation loop in Python, exposes state through Fas
 From the project root:
 
 ```powershell
-python -m pip install fastapi "uvicorn[standard]" streamlit
+python -m pip install -r requirements.txt
 python main.py
 ```
 
@@ -64,8 +84,10 @@ Tracked template and ignored local file:
 
 Current status:
 
-- Core simulation works without API keys
-- LLM usage is optional and intended for later expansion
+- The full simulation (movement, trading, combat, bounties) runs without
+  any API key using the built-in heuristic policy
+- LLM-driven agent decisions are a stub (`llm/pool.py`) intended for later
+  expansion — nothing calls the Groq API yet
 
 ## Economy Overview
 

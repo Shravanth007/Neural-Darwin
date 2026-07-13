@@ -27,7 +27,7 @@ class SchedulerTests(unittest.TestCase):
             arena_manager=ArenaDuelManager(),
             agents={},
         )
-        self.scheduler = SimulationScheduler(self.state)
+        self.scheduler = SimulationScheduler(self.state, autopilot=False)
 
     def tearDown(self) -> None:
         self._tmp.cleanup()

@@ -93,6 +93,14 @@ class Ledger:
                 """
             )
 
+    def reset(self) -> None:
+        """Clear all tables. Each bootstrap starts a fresh population, so stale
+        rows from a previous run would contradict the live state."""
+        with self.connect() as conn:
+            for table in ("events", "agent_snapshots", "graveyard",
+                          "weapon_purchases", "arena_bets"):
+                conn.execute(f"DELETE FROM {table}")
+
     def append_event(
         self,
         tick: int,

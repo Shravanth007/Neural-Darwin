@@ -19,6 +19,7 @@ from core.bounty import BountyBoard
 from core.combat import ArenaDuelManager
 from core.economy import charge_rent
 from core.ledger import Ledger
+from core.policy import run_agent_actions
 from core.world import World
 
 @dataclass
@@ -66,8 +67,15 @@ class SimulationState:
         return self.phase_tick == CYCLE_TICKS - 1
 
 class SimulationScheduler:
-    def __init__(self, state: SimulationState):
+    def __init__(self, state: SimulationState, autopilot: bool = True):
         self.state = state
+        # autopilot drives built-in agent behavior; tests disable it to
+        # exercise economy mechanics in isolation
+        self.autopilot = autopilot
+        # agents whose death has been fully processed; guards against a
+        # second _handle_death (e.g. arena resolution after a mid-duel death)
+        # duplicating events and clobbering the graveyard row
+        self._buried: set[str] = set()
 
     @classmethod
     def bootstrap(cls) -> "SimulationScheduler":
@@ -76,7 +84,7 @@ class SimulationScheduler:
         bounty_board = BountyBoard()
         arena_manager = ArenaDuelManager()
 
-        world.sync_agents_from_db(ledger)
+        ledger.reset()
 
         world.randomize_zones()
 
@@ -118,6 +126,9 @@ class SimulationScheduler:
             self._charge_sanctuary_rent()
 
             self._tick_arena_duel()
+
+            if self.autopilot:
+                run_agent_actions(self)
 
             if self.state.is_day_end:
                 self._run_daily_tax()
@@ -328,6 +339,10 @@ class SimulationScheduler:
         killer: str | None = None,
         bounty_info: str = "",
     ) -> None:
+
+        if agent.agent_id in self._buried:
+            return
+        self._buried.add(agent.agent_id)
 
         if agent.alive:
             agent.mark_dead()

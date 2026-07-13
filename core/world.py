@@ -258,12 +258,6 @@ class World:
             if pos is not None:
                 self._cell_agents[pos].discard(agent_id)
 
-    def sync_agents_from_db(self, ledger: Any) -> None:
-
-        for row in ledger.latest_agent_snapshots():
-            if row["alive"]:
-                self.register_agent(row["agent_id"], row["x"], row["y"])
-
     def get_agents_at(self, x: int, y: int) -> list[str]:
         with self._lock:
             return list(self._cell_agents.get((x, y), set()))
