@@ -456,10 +456,10 @@ def can_place_arena_bet(
         return False, "challenger must be in the arena zone"
     if not world.is_arena(defender.position):
         return False, "defender must be in the arena zone"
-    if not challenger.can_afford(amount):
-        return False, "challenger cannot afford the bet"
-    if not defender.can_afford(amount):
-        return False, "defender cannot afford the bet"
+    if challenger.tokens <= amount:
+        return False, "challenger cannot afford the bet (would be bankrupted)"
+    if defender.tokens <= amount:
+        return False, "defender cannot afford the bet (would be bankrupted)"
     if not challenger.alive or not defender.alive:
         return False, "both agents must be alive"
     return True, "ok"

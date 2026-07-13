@@ -53,7 +53,7 @@ def main() -> None:
 
     print(f"Neural Darwin booted with {len(scheduler.state.agents)} agents (day/night cycle active).")
     print("  API server:  http://localhost:8000/api/health")
-    print("  Frontend:    cd frontend && npm run dev  →  http://localhost:5173")
+    print("  Frontend:    cd frontend && npm run dev  ->  http://localhost:5173")
     print("  (Press Ctrl+C to stop)")
 
     try:
