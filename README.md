@@ -34,7 +34,7 @@ swapping in LLM-driven decisions later.
 
 ## Quick Start
 
-## 1) Backend
+### 1) Backend
 
 From the project root:
 
@@ -47,7 +47,7 @@ Backend health endpoint:
 
 - http://localhost:8000/api/health
 
-## 2) Frontend
+### 2) Frontend
 
 In a new terminal:
 
